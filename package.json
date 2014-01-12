@@ -1,0 +1,15 @@
+{
+  "name": "terminal-layer1",
+  "version": "0.1.0",
+  "description": "Terminal/NPx Layer1 server",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "http://tohjo.ez.lv/ntauthority/terminal-layer1.git"
+  },
+  "author": "NTAuthority",
+  "dependencies": {
+    "iced-coffee-script": "*"
+  },
+  "license": ""
+}
