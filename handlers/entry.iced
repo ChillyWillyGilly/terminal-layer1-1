@@ -38,10 +38,32 @@ run = (mode) ->
 
 	await messageBus.getRPCInputQueue handlers, defer queue
 
+	# subscribe to our queue
 	queue.subscribe { ack: true }, (m, headers, deliveryInfo) ->
-		console.log m
-		console.log deliveryInfo
+		# load the handler
+		try
+			handler = require "./rpc/#{ deliveryInfo.routingKey }.iced"
+		catch e
+			logger.error 'error loading %s: %s', deliveryInfo.routingKey, e.toString()
 
+		if handler
+			correlationId = JSON.parse deliveryInfo.correlationId
+
+			# set up state
+			state =
+				id: correlationId
+				token: correlationId.token
+				replyTo: deliveryInfo.replyTo
+			
+			state.reply = messageBus.getReplyFunction state
+
+			# call the handler
+			try
+				handler m, state
+			catch e
+				logger.error 'error processing %s (correlationId %s): %s\n%s', deliveryInfo.routingKey, JSON.stringify(correlationId), e, (e.stack or '').toString()
+
+		# acknowledge the packet
 		queue.shift false
 
 

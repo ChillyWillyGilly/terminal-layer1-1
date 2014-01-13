@@ -39,9 +39,9 @@ class ProtobufTCPTransport extends Transport
 		super
 
 class ProtobufTCPConnection extends TransportConnection
-	bindTo: (socket) ->
+	bindTo: (@socket) ->
 		# data callback
-		socket.on 'data', (buf) =>
+		@socket.on 'data', (buf) =>
 			# safety check #1, any length (0 == disconnect)
 			if buf.length > 0
 				read = buf.length # bytes read from this packet
@@ -101,13 +101,30 @@ class ProtobufTCPConnection extends TransportConnection
 						@messageState = null
 
 		# error callback
-		socket.on 'error', (err) =>
+		@socket.on 'error', (err) =>
 			logger.info err
 
 			socket.close
 
-		socket.on 'close', (err) =>
+		@socket.on 'close', (err) =>
 			@emit 'close'
+
+	sendMessage: (type, id, message) ->
+		try
+			# serialize the message
+			messageBuffer = pb.Serialize(message, snames[pids[type]])
+
+			# write the header
+			header = new Buffer(16)
+			header.writeUInt32LE MESSAGE_SIGNATURE, 0
+			header.writeUInt32LE messageBuffer.length, 4
+			header.writeUInt32LE pids[type], 8
+			header.writeUInt32LE id, 12
+
+			# and write to the socket
+			@socket.write Buffer.concat [ header, messageBuffer ], header.length + messageBuffer.length
+		catch error
+			logger.warn 'error in message sending: %s', error.toString()
 
 	parseMessage: (state) ->
 		try
@@ -120,7 +137,7 @@ class ProtobufTCPConnection extends TransportConnection
 				data: messageData
 
 		catch error
-			logger.warn error.toString()
+			logger.warn 'error in message handling: %s', error.toString()
 
 
 new ProtobufTCPTransport()

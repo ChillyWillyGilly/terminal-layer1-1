@@ -34,6 +34,13 @@ class MessageBus
 		@connection.on 'ready', =>
 			cb()
 
+	getReplyFunction: (state) ->
+		return (type, data) =>
+			@connection.publish state.replyTo,
+				data: data
+				correlationId: state.id
+				type: type
+
 	# sets up the RPC connection
 	getRPCExchange: (cb) ->
 		@onReady =>
