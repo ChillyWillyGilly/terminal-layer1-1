@@ -6,3 +6,7 @@ modes:
     t-npm:
         type: transport
         transport: protobuf-tcp
+
+transports:
+    protobuf_tcp:
+        port: 3036

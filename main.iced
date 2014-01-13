@@ -27,7 +27,7 @@ if not modes[mode]
 modeTypes =
 	transport: (mode) ->
 		# this mode just includes the transport
-		require "transports/#{ mode.transport }.iced"
+		require "./transports/#{ mode.transport }.iced"
 
 mode = modes[mode]
 
