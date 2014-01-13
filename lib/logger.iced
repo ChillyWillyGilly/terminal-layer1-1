@@ -1,3 +1,5 @@
+# a winston-based logger
+
 winston = require 'winston'
 
 config = require('config').log

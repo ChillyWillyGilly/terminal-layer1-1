@@ -1,3 +1,8 @@
 log:
     console:
         enabled: yes
+
+modes:
+    t-npm:
+        type: transport
+        transport: protobuf-tcp
