@@ -29,6 +29,12 @@ modeTypes =
 		# this mode just includes the transport
 		require "./transports/#{ mode.transport }.iced"
 
+	rpcHandler: (mode) ->
+		# include the main file for handling, and pass the mode as argument
+		handler = require './handlers/entry.iced'
+
+		handler.run mode
+
 mode = modes[mode]
 
 if not mode.type of modeTypes

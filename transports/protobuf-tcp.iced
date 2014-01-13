@@ -27,14 +27,16 @@ pb = new Protobuf(fs.readFileSync config.protobuf_tcp.desc)
 class ProtobufTCPTransport extends Transport
 	constructor: ->
 		# create the server
-		@server = net.createServer (socket) ->
+		@server = net.createServer (socket) =>
 			# connection class instance
-			conn = new ProtobufTCPConnection(socket.remoteAddress)
+			conn = new ProtobufTCPConnection(this, socket.remoteAddress)
 
 			# call our binding method
 			conn.bindTo(socket)
 
 		@server.listen(config.protobuf_tcp.port)
+
+		super
 
 class ProtobufTCPConnection extends TransportConnection
 	bindTo: (socket) ->
@@ -101,6 +103,11 @@ class ProtobufTCPConnection extends TransportConnection
 		# error callback
 		socket.on 'error', (err) =>
 			logger.info err
+
+			socket.close
+
+		socket.on 'close', (err) =>
+			@emit 'close'
 
 	parseMessage: (state) ->
 		try

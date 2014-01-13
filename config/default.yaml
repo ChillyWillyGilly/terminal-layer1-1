@@ -7,7 +7,26 @@ modes:
         type: transport
         transport: protobuf-tcp
 
+    h-all:
+        type: rpcHandler
+        subset: all
+
+    h-auth:
+        type: rpcHandler
+        subset: auth
+
+handlers:
+    all: '#'
+
+    auth:
+        - RPCAuthenticateWithKeyMessage
+        - RPCAuthenticateWithTokenMessage
+        - RPCAuthenticateRegisterServerMessage
+
 transports:
     protobuf_tcp:
         port: 3036
         desc: data/proto.desc
+
+amqp:
+    url: amqp://localhost
