@@ -12,7 +12,16 @@ if not config or not config.protobuf_tcp
 	logger.error 'No configuration for protobuf-tcp transport.'
 	process.exit 1
 
+# requires
 net = require 'net'
+fs = require 'fs'
+{Protobuf} = require 'node-protobuf'
+
+# protobuf desc file
+pb = new Protobuf(fs.readFileSync config.protobuf_tcp.desc)
+
+# and generated messagedefinition
+{pids, pnames, snames} = require './protobuf-ids.iced'
 
 # transport class
 class ProtobufTCPTransport extends Transport
@@ -74,7 +83,7 @@ class ProtobufTCPConnection extends TransportConnection
 					copyLen = Math.min read, @messageState.totalBytes - @messageState.readBytes
 
 					# arguments are targetBuffer, targetOffset, sourceStart, sourceEnd
-					buf.copy @messageState.messageBuffer, @messageState.readBytes, @origin, @origin + copyLen
+					buf.copy @messageState.messageBuffer, @messageState.readBytes, origin, origin + copyLen
 
 					# increment counters
 					@messageState.readBytes += copyLen
@@ -84,10 +93,27 @@ class ProtobufTCPConnection extends TransportConnection
 					# and the obligatory 'did we get a full message' check
 					if @messageState.readBytes >= @messageState.totalBytes
 						# message state, whatever
-						@emit 'message', @messageState
+						@parseMessage @messageState
 
 						# so we know to expect a new header
 						@messageState = null
+
+		# error callback
+		socket.on 'error', (err) =>
+			logger.info err
+
+	parseMessage: (state) ->
+		try
+			# parse the message data for the sent id
+			messageData = pb.Parse(state.messageBuffer, snames[state.messageType])
+
+			@emit 'message', 
+				id: state.messageID
+				type: pnames[state.messageType]
+				data: messageData
+
+		catch error
+			logger.warn error.toString()
 
 
 new ProtobufTCPTransport()

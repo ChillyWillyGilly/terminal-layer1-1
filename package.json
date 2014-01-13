@@ -14,7 +14,8 @@
     "config": "~0.4.34",
     "winston-sentry": "git+http://tohjo.ez.lv/ntauthority/winston-sentry.git",
     "js-yaml": "*",
-    "commander": "~2.1.0"
+    "commander": "~2.1.0",
+    "node-protobuf": "~1.0.10"
   },
   "license": ""
 }

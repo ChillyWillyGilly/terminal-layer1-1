@@ -10,3 +10,4 @@ modes:
 transports:
     protobuf_tcp:
         port: 3036
+        desc: data/proto.desc
