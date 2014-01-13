@@ -12,8 +12,9 @@
     "iced-coffee-script": "*",
     "winston": "~0.7.2",
     "config": "~0.4.34",
-    "winston-sentry": "~0.0.5",
-    "js-yaml": "*"
+    "winston-sentry": "git+http://tohjo.ez.lv/ntauthority/winston-sentry.git",
+    "js-yaml": "*",
+    "commander": "~2.1.0"
   },
   "license": ""
 }

@@ -15,6 +15,7 @@ if config
 		transports.push new Sentry
 			level: 'warn'
 			dsn: config.sentry.dsn
+			patchGlobal: true
 
 module.exports = new winston.Logger
 	transports: transports
