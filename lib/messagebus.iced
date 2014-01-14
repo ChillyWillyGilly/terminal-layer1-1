@@ -45,6 +45,13 @@ class MessageBus
 				correlationId: state.id
 				type: type
 
+	# broadcasts a call on the service exchange
+	broadcast: (type, data) ->
+		await @getServiceExchange defer serviceExchange
+
+		serviceExchange.publish '', data, 
+			type: type
+
 	# gets an exchange for background (callback) servicing
 	getServiceExchange: (cb) ->
 		@onReady =>
@@ -62,15 +69,17 @@ class MessageBus
 
 	# gets a queue listening on the service exchange
 	getServiceQueue: (cb) ->
-		await getServiceExchange defer serviceExchange
-
 		@onReady =>
 			if not @serviceQueue
 				# get a queue
 				await queue = @connection.queue 'npm-service-' + uuid.v4(),
-					exclusive: true,
-					durable: true
+					exclusive: true
 				, defer()
+
+				# bind on all topics
+				queue.bind @serviceExchange, 'null'
+
+				await queue.on 'queueBindOk', defer()
 
 				@serviceQueue = queue
 

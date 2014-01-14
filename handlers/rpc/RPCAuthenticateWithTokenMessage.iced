@@ -24,4 +24,6 @@ module.exports = (data, state) ->
 	# check if the authentication method is loaded
 	return replyAuth 2 if not authMethod
 
+	state.source = config.method
+
 	authMethod new Buffer(data.token).toString(), state, replyAuth

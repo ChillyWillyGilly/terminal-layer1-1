@@ -35,6 +35,12 @@ modeTypes =
 
 		handler.run mode
 
+	service: (mode) ->
+		# include the (similar to handlers/entry.iced) servicing file
+		servicing = require './services/entry.iced'
+
+		servicing.run mode
+
 mode = modes[mode]
 
 if not mode.type of modeTypes

@@ -1,5 +1,7 @@
 persistency = require '../lib/persistency.iced'
 
+messageBus = require '../lib/messagebus.iced'
+
 int64 = require 'int64-native'
 
 module.exports =
@@ -12,6 +14,11 @@ module.exports =
 			# set the connection field for npid/token
 			await persistency.setConnField state, 'npid', npid64.toString(), defer err
 			await persistency.setConnField state, 'sessionToken', token.toString(), defer err
+
+			messageBus.broadcast 'user_authenticated',
+				npid: npid64.toString(),
+				source: state.source
+				token: state.token
 
 		# set default values if not passed
 		npid = npid or [ 0, 0 ]

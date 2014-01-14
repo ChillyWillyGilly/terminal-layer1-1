@@ -15,6 +15,10 @@ modes:
         type: rpcHandler
         subset: auth
 
+    s-all:
+        type: service
+        subset: all
+
 handlers:
     all: '#'
 
@@ -22,6 +26,10 @@ handlers:
         - RPCAuthenticateWithKeyMessage
         - RPCAuthenticateWithTokenMessage
         - RPCAuthenticateRegisterServerMessage
+
+services:
+    all:
+        - avatars
 
 transports:
     protobuf_tcp:
@@ -36,4 +44,3 @@ redis:
 
 auth:
     method: discourse
-    
