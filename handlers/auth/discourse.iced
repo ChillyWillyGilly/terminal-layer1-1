@@ -59,8 +59,12 @@ module.exports = (token, state, reply) ->
 
 	data = JSON.parse body
 
-	# TODO: request avatar data
+	# store avatar data
+	npid = [ 0x1100001, data.user.id ]
+
+	await persistency.setUserField npid, 'discourse_id', data.user.id, defer err
+	await persistency.setUserField npid, 'avatar_template', data.user.avatar_template, defer err
 
 	logger.info 'completed authentication request for discourse user %d', data.user.id
 
-	reply 0, [ 0x1100001, data.user.id ], new Buffer(token)
+	reply 0, npid, new Buffer(token)

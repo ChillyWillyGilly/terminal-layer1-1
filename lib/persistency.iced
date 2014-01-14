@@ -3,6 +3,8 @@ redis = require 'redis'
 
 logger = require './logger.iced'
 
+int64 = require 'int64-native'
+
 # read base configuration
 config = require('config').redis
 
@@ -18,7 +20,7 @@ class Persistency
 
 		# error handler
 		@client.on 'error', (err) =>
-			logger.warn 'error from redis: %s', err
+			logger.warn 'error from redis: %s', err.toString()
 
 		# select the database
 		@client.select config.database or 10, ->
@@ -53,7 +55,23 @@ class Persistency
 
 		cb err, reply
 
+	# user field setter
+	setUserField: (npid, field, value, cb) ->
+		if Array.isArray npid
+			npid = new int64(npid[0], npid[1]).toString()
 
+		await @client.hset "npm:user:#{ npid }", field, value, defer err, reply
+
+		cb err
+
+	# user field getter
+	getUserField: (npid, field, cb) ->
+		if Array.isArray npid
+			npid = new int64(npid[0], npid[1]).toString()
+
+		await @client.hget "npm:user:#{ npid }", field, defer err, reply
+
+		cb err, reply
 
 # return the class instance
 module.exports = new Persistency()
