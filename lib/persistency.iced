@@ -35,15 +35,23 @@ class Persistency
 		# and return to the callback
 		cb connID.toString()
 
+	# delete a connection's info
+	deleteConnection: (connID, cb) ->
+		await @client.del "npm:conn:#{ connID }", defer err
+
+		cb err
+
 	# connection field setter
 	setConnField: (state, field, value, cb) ->
-		await @client.hset 'npm:conn:#{ state.token }', field, value, defer err, reply
+		await @client.hset "npm:conn:#{ state.token }", field, value, defer err, reply
+
+		console.log "npm:conn:#{ state.token }", field, value
 
 		cb err
 
 	# connection field getter
 	getConnField: (state, field, cb) ->
-		await @client.hget 'npm:conn:#{ state.token }', field, defer err, reply
+		await @client.hget "npm:conn:#{ state.token }", field, defer err, reply
 
 		cb err, reply
 

@@ -39,10 +39,18 @@ class Transport extends EventEmitter
 		# connect handler
 		@on 'connect', (connection) =>
 
+	# add a connection to the connection list
 	addConnection: (connection) ->
+		# array
 		@connections[connection.connID] = connection
 
+		# and a close handler
 		connection.on 'close', =>
+			# remove persistent data
+			# TODO: this should actually be done after a timeout (redis EXPIRE command?)
+			await persistency.deleteConnection connection.connID, defer err
+
+			# and delete the array index
 			delete @connections[connection.connID]
 
 	sendRPC: (connection, message) ->
@@ -53,16 +61,33 @@ class Transport extends EventEmitter
 
 class TransportConnection extends EventEmitter
 	constructor: (@transport, @remoteID) ->
-		@transport.addConnection this
-
+		# add a message hander
 		@on 'message', (message) =>
 			@handleMessage(message)
 
+		# and register with persistency
 		persistency.newConnection @remoteID, (@connID) =>
+			# register with the transport
+			@transport.addConnection this
 
+			# registered, do callback stuff
+			@registered = true
+
+			@emit 'register'
+
+	# wait until registered with persistency
+	waitForRegister: (cb) ->
+		return cb() if @registered
+
+		@on 'register', cb
+
+	# basically we just send RPC here
 	handleMessage: (message) ->
+		await @waitForRegister defer()
+
 		@transport.sendRPC this, message
 
+	# base implementation
 	sendMessage: (type, id, message) ->
 		logger.warn 'TransportConnection.sendMessage not overridden'
 

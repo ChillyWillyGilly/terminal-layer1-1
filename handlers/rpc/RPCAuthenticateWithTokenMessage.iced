@@ -1,5 +1,6 @@
-persistency = require '../../lib/persistency.iced'
 logger = require '../../lib/logger.iced'
+
+auth = require '../auth-shared.iced'
 
 # config
 config = require('config').auth
@@ -18,15 +19,7 @@ catch e
 module.exports = (data, state) ->
 	# handy reply function
 	replyAuth = (result, npid, token) ->
-		# TODO: handle state setting related to authentication
-
-		npid = npid or [ 0, 0 ]
-		token = token or new Buffer(16)
-
-		state.reply 'RPCAuthenticateResultMessage',
-			result: result
-			npid: npid
-			sessionToken: token
+		auth.handleAuthReply state, result, npid, token
 
 	# check if the authentication method is loaded
 	return replyAuth 2 if not authMethod
