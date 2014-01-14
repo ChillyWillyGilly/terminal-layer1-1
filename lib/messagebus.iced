@@ -1,5 +1,8 @@
 # message bus handler
 
+# require uuid
+uuid = require 'node-uuid'
+
 # require amqp
 amqp = require 'amqp'
 
@@ -64,7 +67,7 @@ class MessageBus
 		@onReady =>
 			if not @serviceQueue
 				# get a queue
-				await queue = @connection.queue '',
+				await queue = @connection.queue 'npm-service-' + uuid.v4(),
 					exclusive: true,
 					durable: true
 				, defer()
@@ -93,7 +96,7 @@ class MessageBus
 		@onReady =>
 			if not @rpcInputQueue
 				# get a queue
-				await queue = @connection.queue '',
+				await queue = @connection.queue 'npm-input-' + uuid.v4(),
 					exclusive: true,
 					durable: true
 				, defer()
@@ -113,7 +116,7 @@ class MessageBus
 		@onReady =>
 			if not @rpcReplyQueue
 				# get a local reply queue
-				await queue = @connection.queue '',
+				await queue = @connection.queue 'npm-reply-' + uuid.v4(),
 					exclusive: true,
 					durable: true
 				, defer()
