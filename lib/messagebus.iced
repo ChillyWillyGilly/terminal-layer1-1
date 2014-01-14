@@ -44,44 +44,49 @@ class MessageBus
 	# sets up the RPC connection
 	getRPCExchange: (cb) ->
 		@onReady =>
-			# get the main named exchange
-			await exchange = @connection.exchange 'npm-rpc', 
-				type: 'topic'
-				confirm: true
-				durable: true
-			, defer()
+			if not @rpcExchange
+				# get the main named exchange
+				await exchange = @connection.exchange 'npm-rpc', 
+					type: 'topic'
+					confirm: true
+					durable: true
+				, defer()
 
-			@rpcExchange = exchange
+				@rpcExchange = exchange
 
 			# call the callback
 			cb @rpcExchange
 
 	getRPCInputQueue: (topics, cb) ->
 		@onReady =>
-			# get a queue
-			await queue = @connection.queue '',
-				exclusive: true,
-				durable: true
-			, defer()
+			if not @rpcInputQueue
+				# get a queue
+				await queue = @connection.queue '',
+					exclusive: true,
+					durable: true
+				, defer()
 
-			# bind on all topics
-			for topic in topics
-				queue.bind @rpcExchange, topic
+				# bind on all topics
+				for topic in topics
+					queue.bind @rpcExchange, topic
 
-				await queue.on 'queueBindOk', defer()
+					await queue.on 'queueBindOk', defer()
+
+				@rpcInputQueue = queue
 
 			# and complete the callback
-			cb queue
+			cb @rpcInputQueue
 
 	getRPCQueue: (cb) ->
 		@onReady =>
-			# get a local reply queue
-			await queue = @connection.queue '',
-				exclusive: true,
-				durable: true
-			, defer()
+			if not @rpcReplyQueue
+				# get a local reply queue
+				await queue = @connection.queue '',
+					exclusive: true,
+					durable: true
+				, defer()
 
-			@rpcReplyQueue = queue
+				@rpcReplyQueue = queue
 
 			# call the callback
 			cb @rpcReplyQueue
