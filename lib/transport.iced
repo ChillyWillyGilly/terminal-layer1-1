@@ -6,6 +6,9 @@ logger = require './logger.iced'
 # include the message bus
 messageBus = require './messagebus.iced'
 
+# include persistency
+persistency = require './persistency.iced'
+
 class Transport extends EventEmitter
 	constructor: ->
 		# connection list
@@ -37,26 +40,25 @@ class Transport extends EventEmitter
 		@on 'connect', (connection) =>
 
 	addConnection: (connection) ->
-		# TODO: replace with actual connection id instead of remoteID
-		@connections[connection.remoteID] = connection
+		@connections[connection.connID] = connection
 
 		connection.on 'close', =>
-			delete @connections[connection.remoteID]
+			delete @connections[connection.connID]
 
 	sendRPC: (connection, message) ->
 		# publish to the message queue
 		@rpcExchange.publish message.type, message.data,
-			correlationId: JSON.stringify({ id: message.id, token: connection.remoteID })
+			correlationId: JSON.stringify({ id: message.id, token: connection.connID })
 			replyTo: @rpcQueue.name
 
 class TransportConnection extends EventEmitter
 	constructor: (@transport, @remoteID) ->
-		#await persistency.getConnID @remoteID, defer @getConnID
-
 		@transport.addConnection this
 
 		@on 'message', (message) =>
 			@handleMessage(message)
+
+		persistency.newConnection @remoteID, (@connID) =>
 
 	handleMessage: (message) ->
 		@transport.sendRPC this, message

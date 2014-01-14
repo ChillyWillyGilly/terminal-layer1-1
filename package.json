@@ -16,7 +16,8 @@
     "js-yaml": "*",
     "commander": "~2.1.0",
     "node-protobuf": "~1.0.10",
-    "amqp": "~0.1.8"
+    "amqp": "~0.1.8",
+    "redis": "~0.10.0"
   },
   "license": ""
 }

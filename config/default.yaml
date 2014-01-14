@@ -30,3 +30,6 @@ transports:
 
 amqp:
     url: amqp://localhost
+
+redis:
+    host: 127.0.0.1
