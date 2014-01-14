@@ -35,6 +35,18 @@ class Persistency
 		# and return to the callback
 		cb connID.toString()
 
+	# connection field setter
+	setConnField: (state, field, value, cb) ->
+		await @client.hset 'npm:conn:#{ state.token }', field, value, defer err, reply
+
+		cb err
+
+	# connection field getter
+	getConnField: (state, field, cb) ->
+		await @client.hget 'npm:conn:#{ state.token }', field, defer err, reply
+
+		cb err, reply
+
 
 
 # return the class instance
