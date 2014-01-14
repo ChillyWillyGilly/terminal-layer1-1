@@ -62,8 +62,10 @@ module.exports = (token, state, reply) ->
 	# store avatar data
 	npid = [ 0x1100001, data.user.id ]
 
+	avatar_url = 'http:' + data.user.avatar_template.replace('{size}', '90')
+
 	await persistency.setUserField npid, 'discourse_id', data.user.id, defer err
-	await persistency.setUserField npid, 'avatar_template', data.user.avatar_template, defer err
+	await persistency.setUserField npid, 'avatar_url', avatar_url, defer err
 
 	logger.info 'completed authentication request for discourse user %d', data.user.id
 

@@ -26,11 +26,11 @@ class AvatarService
 
 	fetchAvatar: (npid) ->
 		# get the field stored by the auth service
-		await persistency.getUserField npid, 'avatar_template', defer err, avatar_template
+		await persistency.getUserField npid, 'avatar_url', defer err, avatar_url
 
 		# request the avatar
 		await request
-			url: 'http:' + avatar_template.replace('{size}', '90')
+			url: avatar_url
 			encoding: null
 		, defer error, response, body
 
