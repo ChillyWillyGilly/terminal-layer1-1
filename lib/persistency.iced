@@ -45,8 +45,6 @@ class Persistency
 	setConnField: (state, field, value, cb) ->
 		await @client.hset "npm:conn:#{ state.token }", field, value, defer err, reply
 
-		console.log "npm:conn:#{ state.token }", field, value
-
 		cb err
 
 	# connection field getter
