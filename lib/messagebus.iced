@@ -34,12 +34,44 @@ class MessageBus
 		@connection.on 'ready', =>
 			cb()
 
+	# gets a function to reply to the specified state
 	getReplyFunction: (state) ->
 		return (type, data) =>
 			@connection.publish state.replyTo,
 				data: data
 				correlationId: state.id
 				type: type
+
+	# gets an exchange for background (callback) servicing
+	getServiceExchange: (cb) ->
+		@onReady =>
+			if not @serviceExchange
+				# get the named exchange for such
+				await exchange = @connection.exchange 'npm-service',
+					type: 'fanout'
+					confirm: true
+					durable: true
+				, defer()
+
+				@serviceExchange = exchange
+
+			cb @serviceExchange
+
+	# gets a queue listening on the service exchange
+	getServiceQueue: (cb) ->
+		await getServiceExchange defer serviceExchange
+
+		@onReady =>
+			if not @serviceQueue
+				# get a queue
+				await queue = @connection.queue '',
+					exclusive: true,
+					durable: true
+				, defer()
+
+				@serviceQueue = queue
+
+			cb @serviceQueue
 
 	# sets up the RPC connection
 	getRPCExchange: (cb) ->
