@@ -30,6 +30,7 @@ handlers:
 services:
     all:
         - avatars
+        - auth
 
 transports:
     protobuf_tcp:

@@ -50,6 +50,10 @@ class Transport extends EventEmitter
 			# TODO: this should actually be done after a timeout (redis EXPIRE command?)
 			await persistency.deleteConnection connection.connID, defer err
 
+			# run a callback
+			messageBus.broadcast 'client_close', 
+				connID: connection.connID
+
 			# and delete the array index
 			delete @connections[connection.connID]
 

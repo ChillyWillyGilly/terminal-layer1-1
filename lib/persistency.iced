@@ -39,7 +39,7 @@ class Persistency
 
 	# delete a connection's info
 	deleteConnection: (connID, cb) ->
-		await @client.del "npm:conn:#{ connID }", defer err
+		await @client.expire "npm:conn:#{ connID }", 240, defer err
 
 		cb err
 
@@ -55,21 +55,24 @@ class Persistency
 
 		cb err, reply
 
-	# user field setter
-	setUserField: (npid, field, value, cb) ->
+	# get user key name
+	getUserKey: (npid, key) ->
 		if Array.isArray npid
 			npid = new int64(npid[0], npid[1]).toString()
 
-		await @client.hset "npm:user:#{ npid }", field, value, defer err, reply
+		return "npm:user:#{ npid }" if not key
+
+		return "npm:user:#{ npid }:#{ key }"
+
+	# user field setter
+	setUserField: (npid, field, value, cb) ->
+		await @client.hset @getUserKey(npid), field, value, defer err, reply
 
 		cb err
 
 	# user field getter
 	getUserField: (npid, field, cb) ->
-		if Array.isArray npid
-			npid = new int64(npid[0], npid[1]).toString()
-
-		await @client.hget "npm:user:#{ npid }", field, defer err, reply
+		await @client.hget @getUserKey(npid), field, defer err, reply
 
 		cb err, reply
 

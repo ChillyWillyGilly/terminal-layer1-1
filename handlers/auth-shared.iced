@@ -15,6 +15,8 @@ module.exports =
 			await persistency.setConnField state, 'npid', npid64.toString(), defer err
 			await persistency.setConnField state, 'sessionToken', token.toString(), defer err
 
+			await persistency.client.lpush persistency.getUserKey(npid, 'conns'), state.token, defer err
+
 			messageBus.broadcast 'user_authenticated',
 				npid: npid64.toString(),
 				source: state.source
