@@ -28,4 +28,22 @@ class SessionsService
 
 		cb err
 
+	createSession: (sessionid, npid, info, cb) ->
+		# set extended fields
+		for field in info.data
+			await persistency.setSessionField sessionid, '_' + field.key, field.value, defer err
+
+			await persistency.client.sadd "npm:sdata:_#{ field.key }:#{ field.value }", sessionid, defer err
+
+		await persistency.client.sadd "npm:sdata:_session:1", sessionid, defer err
+
+		# set baseline fields
+		await persistency.setSessionField sessionid, 'address', info.address + ':' + info.port, defer err
+		await persistency.setSessionField sessionid, 'players', info.players + '/' + info.maxplayers, defer err
+
+		await persistency.setSessionField sessionid, 'sid', sessionid, defer err
+		await persistency.setSessionField sessionid, 'npid', npid, defer err
+
+		cb err
+
 module.exports = new SessionsService()

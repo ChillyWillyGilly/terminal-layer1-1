@@ -6,7 +6,7 @@ service = require '../../services/sessions.iced'
 
 int64 = require 'int64-native'
 
-REPLY_MESSAGE = 'RPCServersCreateSessionResultMessage'
+REPLY_MESSAGE = 'RPCServersUpdateSessionResultMessage'
 
 module.exports = (data, state) ->
 	# get the connection npid
@@ -20,20 +20,20 @@ module.exports = (data, state) ->
 
 		return
 
-	# remove any old sessions by this connection
-	await persistency.getConnField state, 'sessionid', defer err, oldsid
+	await persistency.getConnField state, 'sessionid', defer err, sessionid
 
-	if oldsid
-		await service.deleteSession oldsid, state.token, defer err
+	if not sessionid
+		state.reply REPLY_MESSAGE,
+			result: 1
+			sessionid: ''
 
-	# get a new session id
-	await persistency.client.incr 'npm:session_id', defer err, sessionid
+		return
+
+	if sessionid
+		await service.deleteSession sessionid, state.token, defer err
 
 	# create the session
 	await service.createSession sessionid, npid, data.info, defer err
-
-	# register the session with the connection
-	await persistency.setConnField state, 'sessionid', sessionid, defer err
 
 	# and send a reply
 	sessionid64 = new int64(sessionid)
