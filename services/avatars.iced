@@ -44,6 +44,7 @@ class AvatarService
 
 		path = 'data/avatars/' + npid
 		path += '.jpg' if contentType == 'image/jpeg'
+		path += '.gif' if contentType == 'image/gif'
 		path += '.png' if contentType == 'image/png'
 
 		# actually write it
@@ -53,14 +54,14 @@ class AvatarService
 		return if error
 
 		# convert if it's a jpeg image
-		if contentType == 'image/jpeg'
+		if contentType == 'image/jpeg' or contentType == 'image/gif'
 			await easyimage.convert
 				src: path
-				dst: path.replace '.jpg', '.png'
+				dst: path.replace('.jpg', '.png').replace '.gif', '.png'
 				quality: 10
 			, defer err, image
 
-			path = path.replace '.jpg', '.png'
+			path = path.replace('.jpg', '.png').replace '.gif', '.png'
 
 		# and log it
 		logger.info 'stored avatar %s', path
