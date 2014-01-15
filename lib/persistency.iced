@@ -76,5 +76,17 @@ class Persistency
 
 		cb err, reply
 
+	# session field setter
+	setSessionField: (sid, field, value, cb) ->
+		await @client.hset "npm:session:#{ sid }", field, value, defer err, reply
+
+		cb err
+
+	# session field getter
+	getSessionField: (sid, field, sb) ->
+		await @client.hget "npm:session:#{ sid }", field, defer err, reply
+
+		cb err, reply
+
 # return the class instance
 module.exports = new Persistency()
