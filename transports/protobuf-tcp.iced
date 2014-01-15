@@ -18,7 +18,7 @@ fs = require 'fs'
 {Protobuf} = require 'node-protobuf'
 
 # protobuf desc file
-pb = new Protobuf(fs.readFileSync config.protobuf_tcp.desc)
+pb = new Protobuf(fs.readFileSync(config.protobuf_tcp.desc), true)
 
 # and generated messagedefinition
 {pids, pnames, snames} = require './protobuf-ids.iced'

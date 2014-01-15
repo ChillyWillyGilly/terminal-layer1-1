@@ -2,6 +2,8 @@ persistency = require '../../lib/persistency.iced'
 
 messageBus = require '../../lib/messagebus.iced'
 
+int64 = require 'int64-native'
+
 REPLY_MESSAGE = 'RPCServersCreateSessionResultMessage'
 
 module.exports = (data, state) ->
@@ -18,7 +20,7 @@ module.exports = (data, state) ->
 
 	await persistency.client.incr 'npm:session_id', defer err, sessionid
 
-	for field of data.info.data
+	for field in data.info.data
 		await persistency.setSessionField sessionid, field.key, field.value, defer err
 
 	await persistency.setSessionField sessionid, 'address', data.info.address + ':' + data.info.port, defer err
@@ -29,6 +31,8 @@ module.exports = (data, state) ->
 
 	await persistency.setConnField state, 'sessionid', sessionid, defer err
 
-	state.reply REPLY_MESSAGE
+	sessionid64 = new int64(sessionid)
+
+	state.reply REPLY_MESSAGE,
 		result: 0
-		sessionid: [ sessionid >> 32 , sessionid & 0xFFFFFFFF ]
+		sessionid: [ sessionid64.high32(), sessionid64.low32() ]
