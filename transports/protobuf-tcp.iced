@@ -111,6 +111,10 @@ class ProtobufTCPConnection extends TransportConnection
 
 	sendMessage: (type, id, message) ->
 		try
+			# weird hack around no buffer support in amqp
+			if message._buffer
+				message[message._buffer] = new Buffer(message[message._buffer])
+
 			# serialize the message
 			messageBuffer = pb.Serialize(message, snames[pids[type]])
 

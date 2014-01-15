@@ -27,12 +27,15 @@ class Persistency
 			logger.info 'selected redis database %d', config.database or 10
 
 	# initiate basic information for a connection
-	newConnection: (remoteID, cb) -> 
+	newConnection: (remoteID, replyQueue, cb) -> 
 		# connection ID (needs some code to prevent it going above the maximum value JS can handle, if anything interprets it as a number)
 		await @client.incr 'npm:conn_id', defer err, connID
 
 		# set the 'remote ID' for the connection
 		await @client.hset "npm:conn:#{ connID }", 'remoteID', remoteID, defer err, reply
+
+		# set the reply queue
+		await @client.hset "npm:conn:#{ connID }", 'replyQueue', replyQueue, defer err, reply
 
 		# and return to the callback
 		cb connID.toString()

@@ -70,7 +70,7 @@ class TransportConnection extends EventEmitter
 			@handleMessage(message)
 
 		# and register with persistency
-		persistency.newConnection @remoteID, (@connID) =>
+		persistency.newConnection @remoteID, @transport.rpcQueue.name, (@connID) =>
 			# register with the transport
 			@transport.addConnection this
 
