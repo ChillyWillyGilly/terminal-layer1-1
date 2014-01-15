@@ -102,7 +102,7 @@ module.exports = (data, state) ->
 
 	for session in sessions
 		npid64 = new int64(parseInt(session.npid.substring(0, 8), 16), parseInt(session.npid.substring(8), 16))
-		sessionid64 = 
+		sessionid64 = new int64(session.sid)
 
 		server = 
 			address: session.address.split(':')[0]
@@ -110,7 +110,7 @@ module.exports = (data, state) ->
 			npid: [ npid64.high32(), npid64.low32() ]
 			players: session.players.split('/')[0]
 			maxplayers: session.players.split('/')[1]
-			sid: session.sid
+			sid: [ sessionid64.high32(), sessionid64.low32() ]
 
 		server.data = []
 
