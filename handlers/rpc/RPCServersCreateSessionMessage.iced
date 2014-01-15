@@ -2,6 +2,8 @@ persistency = require '../../lib/persistency.iced'
 
 messageBus = require '../../lib/messagebus.iced'
 
+service = require '../../services/sessions.iced'
+
 int64 = require 'int64-native'
 
 REPLY_MESSAGE = 'RPCServersCreateSessionResultMessage'
@@ -18,10 +20,17 @@ module.exports = (data, state) ->
 
 		return
 
+	await persistency.getConnField state, 'sessionid', defer err, oldsid
+
+	if oldsid
+		await service.deleteSession oldsid, state.token, defer err
+
 	await persistency.client.incr 'npm:session_id', defer err, sessionid
 
 	for field in data.info.data
-		await persistency.setSessionField sessionid, field.key, field.value, defer err
+		await persistency.setSessionField sessionid, '_' + field.key, field.value, defer err
+
+		await persistency.client.sadd "npm:sdata:_#{ field.key }:#{ field.value }", sessionid
 
 	await persistency.setSessionField sessionid, 'address', data.info.address + ':' + data.info.port, defer err
 	await persistency.setSessionField sessionid, 'players', data.info.players + '/' + data.info.maxplayers, defer err
