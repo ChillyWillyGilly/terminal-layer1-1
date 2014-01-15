@@ -20,6 +20,8 @@ class SessionsService
 
 			await persistency.client.srem "npm:sdata:#{ key }:#{ value }", sid, defer err
 
+		await persistency.client.srem "npm:sdata:_session:1", sid, defer err
+
 		await persistency.client.del "npm:session:#{ sid }", defer err
 
 		await persistency.client.hdel "npm:conn:#{ token }", 'sessionid', defer err

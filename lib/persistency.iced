@@ -20,7 +20,7 @@ class Persistency
 
 		# error handler
 		@client.on 'error', (err) =>
-			logger.warn 'error from redis: %s', err.toString()
+			logger.error 'error: %s\n%s', err.toString(), (err.stack or '').toString()
 
 		# select the database
 		@client.select config.database or 10, ->
