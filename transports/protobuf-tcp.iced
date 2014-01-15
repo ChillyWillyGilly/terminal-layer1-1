@@ -12,6 +12,11 @@ if not config or not config.protobuf_tcp
 	logger.error 'No configuration for protobuf-tcp transport.'
 	process.exit 1
 
+# persistency
+persistency = require '../lib/persistency.iced'
+persistency.client.flushdb ->
+	logger.info 'cleared redis database (FIXME)'
+
 # requires
 net = require 'net'
 fs = require 'fs'
