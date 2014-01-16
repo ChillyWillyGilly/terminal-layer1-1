@@ -32,6 +32,7 @@ services:
         - avatars
         - auth
         - sessions
+        - externals
 
 transports:
     protobuf_tcp:
@@ -46,3 +47,7 @@ redis:
 
 auth:
     method: discourse
+
+externals:
+    citiv:
+        queue: citivreq
