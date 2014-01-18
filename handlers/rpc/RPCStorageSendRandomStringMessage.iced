@@ -73,13 +73,13 @@ module.exports = (data, state) ->
 
 	type = str.split(/\s/)[0]
 
-	# check the server stuff for a random handler
-	if not type of externalConfig
-		logger.info 'Unknown type %s sent in random string.', type
-		return
-
 	# get the handler data
 	typeData = externalConfig[type]
+
+	# check the server stuff for a random handler
+	if not typeData
+		logger.info 'Unknown type %s sent in random string.', type
+		return
 
 	# parse the actual data
 	data = JSON.parse str.substring type.length + 1
