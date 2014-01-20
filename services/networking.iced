@@ -4,6 +4,8 @@ redisq = require 'redisq'
 inQueue = redisq.queue 'int-networking'
 outQueue = redisq.queue 'thresp'
 
+logger = require '../lib/logger.iced'
+
 crypto = require 'crypto'
 
 # configuration
@@ -29,6 +31,7 @@ class NetworkingService
 				return
 
 			# process the actual credential creation
+			logger.info 'received p2p relay request from', task.npid
 
 			# username and expiration timestamp
 			username = task.npid

@@ -46,13 +46,14 @@ replyQueue.process (task, done) ->
 		# get the reply queue used for the transport
 		await persistency.getConnField targetState, 'replyQueue', defer err, replyTo
 
-		targetState.replyTo = replyTo
+		if not err and replyTo
+			targetState.replyTo = replyTo
 
-		# send the reply
-		replyFunc = messageBus.getReplyFunction targetState
+			# send the reply
+			replyFunc = messageBus.getReplyFunction targetState
 
-		replyFunc REPLY_MESSAGE,
-			randomString: JSON.stringify task.body
+			replyFunc REPLY_MESSAGE,
+				randomString: JSON.stringify task.body
 	catch error
 		logger.error error.toString()
 
