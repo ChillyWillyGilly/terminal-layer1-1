@@ -26,7 +26,7 @@ class Transport extends EventEmitter
 					correlationId = m.correlationId
 					msgType = m.type
 
-					if not correlationId.token of @connections
+					if not (correlationId.token of @connections)
 						logger.info 'attempted to reply to invalid connection %s', correlationId.token
 						return
 
