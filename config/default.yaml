@@ -33,6 +33,7 @@ services:
         - auth
         - sessions
         - externals
+        - networking
 
 transports:
     protobuf_tcp:
@@ -48,6 +49,12 @@ redis:
 auth:
     method: discourse
 
+p2prelay:
+    enabled: no
+
 externals:
     citiv:
         queue: citivreq
+
+    networking:
+        queue: int-networking
