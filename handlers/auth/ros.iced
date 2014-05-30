@@ -43,11 +43,13 @@ module.exports = (token, state, reply) ->
     else
         await parseString res, defer err, result
 
+        result = result.Response
+
         if err
             reply 2
         else
-            if result.Error and result.Error.Code and result.Error.Code == 'InvalidArgument' and result.Error.CodeEx == 'InviteeRockstarId'
-                npid = [ 0x1400001, data.user.id ]
+            if result.Error and result.Error[0].$.Code and result.Error[0].$.Code == 'InvalidArgument' and result.Error[0].$.CodeEx == 'InviteeRockstarId'
+                npid = [ 0x1400001, parseInt id ]
 
                 reply 0, npid, new Buffer(token)
             else
