@@ -3,7 +3,7 @@ auth = require '../auth-shared.iced'
 anonymousSid = 1
 
 module.exports = (data, state) ->
-    if data.key != ''
+    if data.licenseKey != ''
         auth.handleAuthReply state, 1
 
     # handy reply function
