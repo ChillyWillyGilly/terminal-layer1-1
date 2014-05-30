@@ -22,7 +22,9 @@
     "int64-native": "~0.2.0",
     "node-uuid": "~1.4.1",
     "easyimage": "~0.1.6",
-    "redisq": "~0.1.17"
+    "redisq": "~0.1.17",
+    "buffertools": "~2.1.2",
+    "xml2js": "~0.4.4"
   },
   "license": ""
 }

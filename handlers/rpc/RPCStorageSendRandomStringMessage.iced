@@ -37,6 +37,8 @@ if not externalConfig
 replyQueue = redisq.queue 'thresp'
 
 replyQueue.process (task, done) ->
+	done(null)
+
 	try
 		# reply state
 		targetState = 
@@ -56,8 +58,6 @@ replyQueue.process (task, done) ->
 				randomString: JSON.stringify task.body
 	catch error
 		logger.error error.toString()
-
-	done null
 , 16
 
 module.exports = (data, state) ->
