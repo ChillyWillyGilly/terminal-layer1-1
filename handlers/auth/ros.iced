@@ -26,7 +26,10 @@ requestRos = (service, kv, cb) ->
     if err
         cb err
     else
-        cb null, rosCrypt.decrypt(body).toString 'utf8'
+        try
+            cb null, rosCrypt.decrypt(body).toString 'utf8'
+        catch e
+            cb e
 
 module.exports = (token, state, reply) ->
     tokenParts = token.split('&&')
@@ -51,6 +54,6 @@ module.exports = (token, state, reply) ->
             if result.Error and result.Error[0].$.Code and result.Error[0].$.Code == 'InvalidArgument' and result.Error[0].$.CodeEx == 'InviteeRockstarId'
                 npid = [ 0x1400001, parseInt id ]
 
-                reply 0, npid, new Buffer(token)
+                reply 0, npid, [ 'ros', id ]
             else
                 reply 1

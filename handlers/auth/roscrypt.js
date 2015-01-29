@@ -202,6 +202,7 @@ function decrypt(packet, client)
 		{
 			if (buffertools.compare(messageDigest, hBufAgainst) !== 0)
 			{
+				console.log(packet.toString());
 				throw 'message digest of received buffers does not match';
 			}
 		}

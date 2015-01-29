@@ -47,7 +47,7 @@ redis:
     host: 127.0.0.1
 
 auth:
-    method: discourse
+    method: npv2
 
 p2prelay:
     enabled: no
