@@ -1,5 +1,5 @@
 
-Š
+Ÿ
 
 auth.proto"0
 AuthenticateWithKeyMessage
@@ -19,11 +19,12 @@ licenseKey (	"D
 !AuthenticateValidateTicketMessage
 clientIP (
 npid (
-ticket ("X
+ticket ("m
 'AuthenticateValidateTicketResultMessage
 result (
 npid (
-groupID ("Q
+groupID (
+identifiers (	"Q
 AuthenticateKickUserMessage
 npid (
 reason (

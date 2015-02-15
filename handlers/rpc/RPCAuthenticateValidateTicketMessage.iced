@@ -27,6 +27,8 @@ module.exports = (data, state) ->
 
     valid = false
 
+    identifierString = 'null'
+
     if ticket.version == 1
         # get the connection npid
         await persistency.getConnField state, 'npid', defer err, npid
@@ -49,6 +51,8 @@ module.exports = (data, state) ->
                         await persistency.getConnField targetState, 'remoteID', defer err, remoteID
 
                         if remoteID == ip or ip.indexOf('192.168') == 0 or ip.indexOf('172.1') == 0 or ip.indexOf('172.2') == 0 or ip.indexOf('10.') == 0
+                            await persistency.getConnField targetState, 'identifiers', defer err, identifierString
+
                             valid = true
 
 
@@ -59,3 +63,4 @@ module.exports = (data, state) ->
         result: result
         groupID: 0
         npid: data.npid
+        identifiers: identifierString
