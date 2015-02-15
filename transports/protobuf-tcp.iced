@@ -20,7 +20,7 @@ persistency.client.flushdb ->
 # requires
 net = require 'net'
 fs = require 'fs'
-{Protobuf} = require 'node-protobuf'
+Protobuf = require 'node-protobuf'
 
 # protobuf desc file
 pb = new Protobuf(fs.readFileSync(config.protobuf_tcp.desc), true)
