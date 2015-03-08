@@ -22,6 +22,8 @@ net = require 'net'
 fs = require 'fs'
 Protobuf = require 'node-protobuf'
 
+Protobuf = Protobuf.Protobuf if Protobuf.Protobuf
+
 # protobuf desc file
 pb = new Protobuf(fs.readFileSync(config.protobuf_tcp.desc), true)
 
