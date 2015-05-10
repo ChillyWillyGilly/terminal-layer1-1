@@ -45,7 +45,7 @@ module.exports = (token, state, reply) ->
     tokenParts = token.split('&&')
     ticket = tokenParts[0]
     id = tokenParts[1]
-    game = tokenParts[2] or 'mp3'
+    game = gameSettings[tokenParts[2] or 'mp3'] or gameSettings['mp3']
 
     await requestRos game, 'Friends.asmx/InviteByRockstarId',
         ticket: ticket
