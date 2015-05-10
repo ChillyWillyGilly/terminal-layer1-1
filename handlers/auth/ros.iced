@@ -19,7 +19,7 @@ querystring = require 'querystring'
 {parseString} = require 'xml2js'
 
 requestRos = (game, service, kv, cb) ->
-    ua = rosCrypt.encryptUA "e=1,t=#{ game.name },p=pcros,v=11"
+    ua = game.rosCrypt.encryptUA "e=1,t=#{ game.name },p=pcros,v=11"
 
     await request
         url: "https://prod.ros.rockstargames.com/#{ game.name }/11/gameservices/#{ service }"
