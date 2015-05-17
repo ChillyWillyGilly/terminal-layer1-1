@@ -58,3 +58,6 @@ externals:
 
     networking:
         queue: int-networking
+
+    metric:
+        queue: metrics

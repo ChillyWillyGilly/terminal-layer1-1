@@ -62,7 +62,9 @@ replyQueue.process (task, done) ->
 
 module.exports = (data, state) ->
 	# get the connection npid
-	await persistency.getConnField state, 'npid', defer err, npid
+	await
+		persistency.getConnField state, 'npid', defer err, npid
+		persistency.getConnField state, 'identifiers', defer err, identifiers
 
 	# return if not authenticated
 	return if not npid
@@ -94,5 +96,6 @@ module.exports = (data, state) ->
 	# and send the dispatch
 	typeData.queueInstance.push
 		npid: npid.substring 1
+		identifiers: identifiers
 		conn: [ state.id.token, state.id.id ]
 		body: data
