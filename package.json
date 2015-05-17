@@ -21,7 +21,7 @@
     "node-protobuf": "^1.0.10",
     "node-uuid": "~1.4.2",
     "redis": "^0.12.1",
-    "redisq": "~0.1.18",
+    "redisq": "^0.1.18",
     "request": "^2.53.0",
     "winston": "^0.9.0",
     "winston-sentry": "git+http://tohjo.ez.lv/ntauthority/winston-sentry.git",
