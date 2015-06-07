@@ -107,46 +107,46 @@ module.exports = function(baseSecret)
 	var crypto = require('crypto');
 	var buffertools = require('buffertools')
 
-	function getMessageDigest(data, key, clientBit)
+	function getMessageDigest(data, key, clientBit, sessionKey)
 	{
-		// compute base hash
-		var hash = crypto.createHash('sha1');
+			// compute base hash
+			var hash = crypto.createHash('sha1');
 
-		if (clientBit)
-		{
-			hash.update(clientBit);
-		}
+			if (sessionKey)
+			{
+				var keyBit = sessionKey;
 
-		hash.update(data);
-		hash.update(key);
+				hash = crypto.createHmac('sha1', keyBit);
+			}
 
-		hash = hash.digest();
+			if (clientBit)
+			{
+				hash.update(clientBit);
+			}
 
-		return hash;
+			hash.update(data);
+			hash.update(key);
 
-		// make it into a message digest
-		var keyBuffer = new Buffer(64);
-		keyBuffer.fill(0);
+			hash = hash.digest();
 
-		for (var i = 0; i < key.length; i++)
-		{
-			keyBuffer.writeUInt8(key.readUInt8(i), i);
-		}
-
-		for (var i = 0; i < keyBuffer.length; i++)
-		{
-			keyBuffer.writeUInt8(keyBuffer.readUInt8(i) ^ 0x5C, i);
-		}
-
-		var hmac = crypto.createHash('sha1');
-		hmac.update(keyBuffer);
-		hmac.update(hash);
-		return hmac.digest();
+			return hash;
 	}
 
-	function decrypt(packet, client)
+	function decrypt(packet, client, sessionKey)
 	{
 		var keyBit = getBaseKey(false);
+
+		if (sessionKey)
+		{
+			var newKey = new Buffer(16);
+
+			for (var i = 0; i < 16; i++)
+			{
+				newKey.writeUInt8(keyBit.readUInt8(i) ^ sessionKey.readUInt8(i), i);
+			}
+
+			keyBit = newKey;
+		}
 
 		var packetKeyOld = packet.slice(0, 16);
 		var packetKey = new Buffer(16);
@@ -200,7 +200,7 @@ module.exports = function(baseSecret)
 			var messageDigest = getMessageDigest(eBuf, keyBitVer);
 			var hBufAgainst = dataSeg.slice(end, end + 20);
 
-			if (!client)
+			if (!client && !sessionKey)
 			{
 				if (buffertools.compare(messageDigest, hBufAgainst) !== 0)
 				{
@@ -219,9 +219,21 @@ module.exports = function(baseSecret)
 		return dataDec;
 	}
 
-	function encrypt(packet)
+	function encrypt(packet, sessionKey)
 	{
 		var cryptoKey = getBaseKey(false);
+
+		if (sessionKey)
+		{
+			var newKey = new Buffer(16);
+
+			for (var i = 0; i < 16; i++)
+			{
+				newKey.writeUInt8(cryptoKey.readUInt8(i) ^ sessionKey.readUInt8(i), i);
+			}
+
+			cryptoKey = newKey;
+		}
 
 		var dataBuffers = [];
 		var outHeader = new Buffer(16);
@@ -263,7 +275,7 @@ module.exports = function(baseSecret)
 
 			dataBuffers.push(eBuf);
 
-			var messageDigest = getMessageDigest(eBuf, verifKey, outHeader);
+			var messageDigest = getMessageDigest(eBuf, verifKey, outHeader, (sessionKey) ? packetKey : null);
 
 			dataBuffers.push(messageDigest);
 
@@ -282,6 +294,7 @@ module.exports = function(baseSecret)
 		decrypt: decrypt,
 		encrypt: encrypt,
 		setSecret: setSecret,
+		getBaseKey: getBaseKey,
 	    encryptUA: encryptUserAgent
 	};
 };
