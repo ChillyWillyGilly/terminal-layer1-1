@@ -131,7 +131,7 @@ module.exports = (token, state, reply) ->
     else
         await parseString res, defer err, result
 
-        result = result.Response
+        result = result.Response if result
 
         if err
             console.log err
