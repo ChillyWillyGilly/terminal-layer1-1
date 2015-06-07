@@ -77,7 +77,7 @@ requestRos = (game, service, kv, secOptions, cb) ->
     sessionKey = secOptions.sessionKey if secOptions
     sessionTicket = secOptions.sessionTicket if secOptions
 
-    sessionKey = new Buffer(sessionKey, 'base64')
+    sessionKey = new Buffer(sessionKey, 'base64') if sessionKey
 
     options = 
         url: "http://prod.ros.rockstargames.com/#{ game.name }/11/gameservices/#{ service }"
@@ -106,6 +106,9 @@ requestRos = (game, service, kv, secOptions, cb) ->
 
             cb null, decrypted
         catch e
+            console.log response.statusCode
+            console.log response.headers
+
             cb e
 
 module.exports = (token, state, reply) ->
@@ -122,6 +125,8 @@ module.exports = (token, state, reply) ->
     , {sessionKey: sessionKey, sessionTicket: sessionTicket }, defer err, res
 
     if err
+        console.log err
+
         reply 2
     else
         await parseString res, defer err, result
@@ -129,6 +134,8 @@ module.exports = (token, state, reply) ->
         result = result.Response
 
         if err
+            console.log err
+
             reply 2
         else
             if result.Error and result.Error[0].$.Code and result.Error[0].$.Code == 'InvalidArgument' and result.Error[0].$.CodeEx == 'InviteeRockstarId'
