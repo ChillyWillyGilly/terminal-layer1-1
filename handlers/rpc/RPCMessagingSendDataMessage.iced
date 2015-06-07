@@ -16,7 +16,7 @@ module.exports = (data, state) ->
 	npid64 = new int64(parseInt(npid.substring(0, 8), 16), parseInt(npid.substring(8), 16))
 
 	# get target id
-	targetid64 = new int64(data.npid[0], data.npid[1])
+	targetid64 = new int64(data.npid)
 	targetid = targetid64.toString()
 
 	# get the target npid's connections
@@ -49,6 +49,6 @@ module.exports = (data, state) ->
 		replyFunc = messageBus.getReplyFunction targetState
 
 		replyFunc REPLY_MESSAGE,
-			npid: [ npid64.high32(), npid64.low32() ]
+			npid: npid64.toSignedDecimalString()
 			data: data.data
 			_buffer: 'data'

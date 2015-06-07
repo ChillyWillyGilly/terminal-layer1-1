@@ -21,9 +21,11 @@ readTicket = (ticket) ->
 module.exports = (data, state) ->
     ipNum = data.clientIP
 
+    npidBit = new int64(data.npid)
+
     ip = ((ipNum >> 24) & 0xFF) + '.' + ((ipNum >> 16) & 0xFF) + '.' + ((ipNum >> 8) & 0xFF) + '.' + (ipNum & 0xFF)
 
-    ticket = readTicket new Buffer(data.ticket)
+    ticket = readTicket new Buffer(data.ticket, 'base64')
 
     valid = false
 
@@ -34,9 +36,9 @@ module.exports = (data, state) ->
         await persistency.getConnField state, 'npid', defer err, npid
 
         if npid == ticket.serverID
-            if data.npid[0] == ticket.clientID.high32() and data.npid[1] == ticket.clientID.low32()
+            if npidBit.high32() == ticket.clientID.high32() and npidBit.low32() == ticket.clientID.low32()
                 # get the target npid's connections
-                await persistency.client.lrange persistency.getUserKey(data.npid, 'conns'), 0, -1, defer err, connections
+                await persistency.client.lrange persistency.getUserKey(npidBit.toString(), 'conns'), 0, -1, defer err, connections
 
                 # if no connection exists, return the appropriate error
                 if not connections or not connections.length

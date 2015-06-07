@@ -26,4 +26,4 @@ module.exports = (data, state) ->
 
 	state.source = config.method
 
-	authMethod new Buffer(data.token).toString(), state, replyAuth
+	authMethod new Buffer(data.token, 'base64').toString(), state, replyAuth

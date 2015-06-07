@@ -11,6 +11,7 @@
   "dependencies": {
     "amqp": "^0.2.3",
     "buffertools": "~2.1.2",
+    "bytebuffer": "^3.5.4",
     "commander": "^2.6.0",
     "config": "^1.11.0",
     "easyimage": "^1.2.2",
@@ -18,8 +19,8 @@
     "int64-native": "https://github.com/jhermsmeier/node-int64-native.git#v8-update",
     "js-yaml": "*",
     "nanomsg": "^0.3.2",
-    "node-protobuf": "^1.2.3",
     "node-uuid": "~1.4.2",
+    "protobufjs": "^4.0.0-b3",
     "redis": "^0.12.1",
     "redisq": "^0.1.18",
     "request": "^2.53.0",

@@ -26,6 +26,12 @@ module.exports =
 		npid = npid or [ 0, 0 ]
 		token = token or new Buffer(16)
 
+		token = new Buffer(token) if not (token instanceof Buffer)
+		token = token.toString('base64')
+
+		npid = new int64(npid[0], npid[1])
+		npid = npid.toSignedDecimalString()
+
 		# and send a reply to the state
 		state.reply 'RPCAuthenticateResultMessage',
 			result: result

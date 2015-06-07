@@ -20,12 +20,16 @@ persistency.client.flushdb ->
 # requires
 net = require 'net'
 fs = require 'fs'
-Protobuf = require 'node-protobuf'
+ProtoBuf = require 'protobufjs'
 
-Protobuf = Protobuf.Protobuf if Protobuf.Protobuf
+builder = null
+builder = ProtoBuf.loadProtoFile 'data_dist/auth.proto', null, builder
+builder = ProtoBuf.loadProtoFile 'data_dist/friends.proto', null, builder
+builder = ProtoBuf.loadProtoFile 'data_dist/hello.proto', null, builder
+builder = ProtoBuf.loadProtoFile 'data_dist/servers.proto', null, builder
+builder = ProtoBuf.loadProtoFile 'data_dist/storage.proto', null, builder
 
-# protobuf desc file
-pb = new Protobuf(fs.readFileSync(config.protobuf_tcp.desc), true)
+Terminal = builder.build()
 
 # and generated messagedefinition
 {pids, pnames, snames} = require './protobuf-ids.iced'
@@ -120,10 +124,12 @@ class ProtobufTCPConnection extends TransportConnection
 		try
 			# weird hack around no buffer support in amqp
 			if message._buffer
-				message[message._buffer] = new Buffer(message[message._buffer])
+				message[message._buffer] = new Buffer(message[message._buffer]).toString('base64')
 
 			# serialize the message
-			messageBuffer = pb.Serialize(message, snames[pids[type]])
+			typeClass = Terminal[snames[pids[type]]]
+
+			messageBuffer = new typeClass(message).toBuffer()
 
 			# write the header
 			header = new Buffer(16)
@@ -135,12 +141,15 @@ class ProtobufTCPConnection extends TransportConnection
 			# and write to the socket
 			@socket.write Buffer.concat [ header, messageBuffer ], header.length + messageBuffer.length
 		catch error
+			console.log message
+
 			logger.warn 'error in message sending: %s', error.toString()
 
 	parseMessage: (state) ->
 		try
 			# parse the message data for the sent id
-			messageData = pb.Parse(state.messageBuffer, snames[state.messageType])
+			type = Terminal[snames[state.messageType]]
+			messageData = type.decode(state.messageBuffer).toRaw true, true
 
 			@emit 'message', 
 				id: state.messageID

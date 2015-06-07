@@ -40,4 +40,4 @@ module.exports = (data, state) ->
 
 	state.reply REPLY_MESSAGE,
 		result: 0
-		sessionid: [ sessionid64.high32(), sessionid64.low32() ]
+		sessionid: sessionid64.toSignedDecimalString()

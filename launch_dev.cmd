@@ -1,4 +1,4 @@
 @echo off
-start "" node main.js -m h-all
-start "" node main.js -m s-all
-start "" node main.js
+start "" iojs main.js -m h-all
+start "" iojs main.js -m s-all
+start "" iojs main.js

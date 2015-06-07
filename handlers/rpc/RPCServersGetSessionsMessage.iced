@@ -107,10 +107,10 @@ module.exports = (data, state) ->
 		server = 
 			address: session.address.split(':')[0]
 			port: session.address.split(':')[1]
-			npid: [ npid64.high32(), npid64.low32() ]
+			npid: npid64.toSignedDecimalString()
 			players: session.players.split('/')[0]
 			maxplayers: session.players.split('/')[1]
-			sid: [ sessionid64.high32(), sessionid64.low32() ]
+			sid: sessionid64.toSignedDecimalString()
 
 		server.data = []
 

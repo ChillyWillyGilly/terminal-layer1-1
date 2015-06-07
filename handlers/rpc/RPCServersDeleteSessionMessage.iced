@@ -29,8 +29,5 @@ module.exports = (data, state) ->
 
 	await service.deleteSession sessionid, state.token, defer err
 
-	# and send a reply
-	sessionid64 = new int64(sessionid)
-
 	state.reply REPLY_MESSAGE,
 		result: 0
