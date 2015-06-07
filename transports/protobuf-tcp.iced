@@ -45,7 +45,7 @@ class ProtobufTCPTransport extends Transport
 			# call our binding method
 			conn.bindTo(socket)
 
-		@server.listen(config.protobuf_tcp.port)
+		@server.listen(config.protobuf_tcp.port, '0.0.0.0')
 
 		super
 
