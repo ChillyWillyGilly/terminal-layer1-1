@@ -22,6 +22,9 @@ class MessageBus
 		# connect based on the configuration
 		@connection = amqp.createConnection(config)
 
+		@connection.on 'error', (error) =>
+			logger.error 'amqp error: %s', error
+
 		@connection.on 'ready', =>
 			# some logs are nice
 			logger.info 'amqp connected to %s', @connection.serverProperties.product
@@ -104,18 +107,56 @@ class MessageBus
 	getRPCInputQueue: (topics, cb) ->
 		@onReady =>
 			if not @rpcInputQueue
+				id = uuid.v4()
+
+				# create a topic exchange connected to the main fanout
+				# see http://lists.rabbitmq.com/pipermail/rabbitmq-discuss/2012-September/022485.html
+				await topicExchange = @connection.exchange 'npm-topic-' + id,
+					type: 'topic'
+					arguments:
+						'alternate-exchange': 'npm-fanout-' + id
+				, defer()
+
+				# bind on all topics that aren't negated
+				for topic in topics
+					continue if topic.indexOf('~') == 0
+
+					topicExchange.bind @rpcExchange, topic
+
+					await topicExchange.on 'exchangeBindOk', defer()
+
+				# create the garbage exchange handling negated topics
+				await garbageExchange = @connection.exchange 'npm-garbage-' + id,
+					type: 'fanout'
+				, defer()
+
+				# assign negated topics to the garbage exchange
+				for topic in topics
+					continue if topic.indexOf('~') != 0
+
+					garbageExchange.bind topicExchange, topic.substring(1)
+
+					await garbageExchange.on 'exchangeBindOk', defer()
+
+				# create the fanout exchange forwarding to the queue later on
+				await fanoutExchange = @connection.exchange 'npm-fanout-' + id,
+					type: 'fanout'
+				, defer()
+
 				# get a queue
-				await queue = @connection.queue 'npm-input-' + uuid.v4(),
+				await queue = @connection.queue 'npm-input-' + id,
 					exclusive: true,
 					durable: true
 				, defer()
 
-				# bind on all topics
-				for topic in topics
-					queue.bind @rpcExchange, topic
+				# bind on everything
+				queue.bind fanoutExchange, '#'
 
-					await queue.on 'queueBindOk', defer()
+				await queue.on 'queueBindOk', defer()
 
+				@rpcTopicExchange = topicExchange
+				@rpcGarbageExchange = garbageExchange
+				@rpcFanoutExchange = fanoutExchange
 				@rpcInputQueue = queue
 
 			# and complete the callback
