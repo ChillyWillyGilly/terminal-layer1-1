@@ -11,7 +11,7 @@ for appid in appids
 	sockets[appid] = nano.socket 'pair'
 	sockets[appid].connect 'ipc:///tmp/terminal-steam-' + appid + '.pipe'
 
-	sockets[appid].on 'message', (buf) ->
+	sockets[appid].on 'data', (buf) ->
 		req 		= buf.readUInt32LE 0
 		steamIDLow 	= buf.readUInt32LE 4
 		steamIDHigh = buf.readUInt32LE 8
