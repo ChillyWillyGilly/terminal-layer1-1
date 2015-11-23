@@ -23,6 +23,11 @@ modes:
         type: service
         subset: all
 
+    w-all:
+        type: webService
+        subset: all
+        port: 3035
+
 handlers:
     all: [ '#', '~RPCAuthenticateWithTokenMessage' ]
 
@@ -41,6 +46,10 @@ services:
         - sessions
         - externals
         - networking
+
+webServices:
+    all:
+        - tickets
 
 transports:
     protobuf_tcp:

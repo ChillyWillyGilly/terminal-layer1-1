@@ -41,6 +41,12 @@ modeTypes =
 
 		servicing.run mode
 
+	webService: (mode) ->
+		# include the main web service file, and pass the mode
+		webService = require './web/entry.iced'
+
+		webService.run mode
+
 mode = modes[mode]
 
 if not mode.type of modeTypes
