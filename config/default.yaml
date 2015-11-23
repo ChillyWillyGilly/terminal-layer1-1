@@ -15,17 +15,24 @@ modes:
         type: rpcHandler
         subset: auth
 
+    h-authToken:
+        type: rpcHandler
+        subset: authWithToken
+
     s-all:
         type: service
         subset: all
 
 handlers:
-    all: '#'
+    all: [ '#', '~RPCAuthenticateWithTokenMessage' ]
 
     auth:
         - RPCAuthenticateWithKeyMessage
         - RPCAuthenticateWithTokenMessage
         - RPCAuthenticateRegisterServerMessage
+
+    authWithToken:
+        - RPCAuthenticateWithTokenMessage
 
 services:
     all:
@@ -48,6 +55,7 @@ redis:
 
 auth:
     method: npv2
+    ros_exit_on_failures: yes
 
 p2prelay:
     enabled: no

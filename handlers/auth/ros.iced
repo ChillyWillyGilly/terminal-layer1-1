@@ -3,6 +3,10 @@ request = require 'request'
 
 RosCrypt = require './roscrypt'
 
+config = require('config').auth
+
+numFailures = 0
+
 gameSettings = 
     gta5:
         secret: 'C4pWJwWIKGUxcHd69eGl2AOwH2zrmzZAoQeHfQFcMelybd32QFw9s10px6k0o75XZeB5YsI9Q9TdeuRgdbvKsxc='
@@ -116,6 +120,13 @@ requestRos = (game, service, kv, secOptions, cb) ->
 
             cb e
 
+handleFailure = ->
+    # handle failure mode
+    numFailures++
+
+    if config.ros_exit_on_failures and numFailures > 10
+        process.exit 1
+
 module.exports = (token, state, reply) ->
     tokenParts = token.split('&&')
     ticket = tokenParts[0]
@@ -130,6 +141,8 @@ module.exports = (token, state, reply) ->
     , {sessionKey: sessionKey, sessionTicket: sessionTicket }, defer err, res
 
     if err
+        handleFailure()
+
         console.log err
 
         reply 2
@@ -139,6 +152,8 @@ module.exports = (token, state, reply) ->
         result = result.Response if result
 
         if err
+            handleFailure()
+
             console.log err
 
             reply 2
