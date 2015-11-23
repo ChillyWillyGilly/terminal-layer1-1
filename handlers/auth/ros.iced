@@ -102,9 +102,14 @@ requestRos = (game, service, kv, secOptions, cb) ->
         cb err
     else
         try
-            decrypted = game.rosCrypt.decrypt(body, false, sessionKey).toString 'utf8'
+            if response.statusCode == 200
+                decrypted = game.rosCrypt.decrypt(body, false, sessionKey).toString 'utf8'
 
-            cb null, decrypted
+                cb null, decrypted
+            else
+                console.log body.toString 'utf8'
+
+                cb "error from ros request"
         catch e
             console.log response.statusCode
             console.log response.headers
