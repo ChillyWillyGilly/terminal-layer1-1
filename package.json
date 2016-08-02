@@ -5,7 +5,7 @@
   "main": "main.js",
   "repository": {
     "type": "git",
-    "url": "http://tohjo.ez.lv/ntauthority/terminal-layer1.git"
+    "url": "http://tohjo.eu/ntauthority/terminal-layer1.git"
   },
   "author": "NTAuthority",
   "dependencies": {
@@ -28,7 +28,7 @@
     "request": "^2.67.0",
     "socks5-http-client": "^1.0.2",
     "winston": "^2.1.1",
-    "winston-sentry": "git+http://tohjo.ez.lv/ntauthority/winston-sentry.git",
+    "winston-sentry": "git+http://tohjo.eu/ntauthority/winston-sentry.git",
     "xml2js": "~0.4.15"
   },
   "license": ""
